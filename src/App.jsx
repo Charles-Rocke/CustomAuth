@@ -1,29 +1,46 @@
-import { useState, useEffect } from "react";
-import ReactDOMServer from "react-dom/server";
+import { useState, useEffect } from 'react';
+import ReactDOMServer from 'react-dom/server';
+import * as prettier from "https://unpkg.com/prettier@3.0.1/standalone.mjs";
+import prettierPluginBabel from "https://unpkg.com/prettier@3.0.1/plugins/babel.mjs";
+import prettierPluginEstree from "https://unpkg.com/prettier@3.0.1/plugins/estree.mjs";
 
 const initalOptions = {
   options: [
     {
       id: 1,
-      option: "Passkey",
+      option: 'Passkey',
     },
     {
       id: 2,
-      option: "Google",
+      option: 'Google',
     },
   ],
 };
 
-function getCardJSX(active, options) {
-  return ReactDOMServer.renderToStaticMarkup(
+async function getCardJSX(active, options) {
+  const jsxCode = ReactDOMServer.renderToStaticMarkup(
     <Card active={active} options={options} />
   );
+
+  try {
+    const formattedCode = await prettier.format(jsxCode, {
+      parser: 'babel',
+      plugins: [prettierPluginBabel, prettierPluginEstree],
+    });
+    console.log(formattedCode);
+    return formattedCode;
+  } catch (error) {
+    console.error(error);
+    return jsxCode;
+  }
 }
+
+// Rest of the code remains unchanged...
 
 function App() {
   const [isActive, setIsActive] = useState(false);
   const [options, setOptions] = useState(initalOptions);
-  const [domCode, setDomCode] = useState("");
+  const [domCode, setDomCode] = useState('');
 
   // Helper methods
   function handleClick() {
@@ -31,8 +48,9 @@ function App() {
   }
 
   useEffect(() => {
-    const updatedDomCode = getCardJSX(isActive, options);
-    setDomCode(updatedDomCode);
+    getCardJSX(isActive, options).then((formattedCode) => {
+      setDomCode(formattedCode);
+    });
   }, [isActive, options]);
 
   function handlePasskeyClick() {
@@ -40,7 +58,7 @@ function App() {
       options: [
         {
           id: 1,
-          option: "Passkey",
+          option: 'Passkey',
         },
       ],
     };
@@ -57,8 +75,8 @@ function App() {
         </div>
         {/* Right Flex */}
         {/* Code Block Starts Here */}
-        <pre>
-          <code>{domCode}</code>
+        <pre style={{ fontSize: '14px', backgroundColor: '#f0f0f0' }}>
+          {domCode}
         </pre>
         {/* Card Starts here */}
         <div className="container">
@@ -69,6 +87,9 @@ function App() {
   );
 }
 
+// ... Rest of the components remain unchanged...
+
+
 function Button({ onClick, children }) {
   return <button onClick={onClick}>{children}</button>;
 }
@@ -76,7 +97,7 @@ function Button({ onClick, children }) {
 function Card({ active, options }) {
   return (
     // Default Layout
-    <div className="card" style={{ width: "18rem" }}>
+    <div className="card" style={{ width: '18rem' }}>
       <div className="card-body">
         <h5 className="card-title">Signup/Login</h5>
         {/* Email */}
@@ -125,7 +146,7 @@ function ItemList({ options, onClick }) {
 
 const MyComponent = () => {
   return (
-    <div className="card" style={{ width: "18rem" }}>
+    <div className="card" style={{ width: '18rem' }}>
       <div className="card-body">
         <h5 className="card-title">Signup/Login</h5>
         <div className="mb-3">
