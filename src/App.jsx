@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import ReactDOMServer from 'react-dom/server';
+import axios from 'axios';
 import * as prettier from "https://unpkg.com/prettier@3.0.1/standalone.mjs";
 import prettierPluginBabel from "https://unpkg.com/prettier@3.0.1/plugins/babel.mjs";
 import prettierPluginEstree from "https://unpkg.com/prettier@3.0.1/plugins/estree.mjs";
@@ -35,6 +36,31 @@ async function getCardJSX(active, options) {
   }
 }
 
+// send original dom code to be converted to JSX
+async function sendPostRequest(domCode) {
+  try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/generate`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ domCode }),
+      });
+
+      if (response.ok) {
+          const responseData = await response.json();
+          console.log('Post request successful:', responseData);
+          return responseData;
+      } else {
+          console.error('Post request failed:', response.statusText);
+          return null;
+      }
+  } catch (error) {
+      console.error('Error sending post request:', error);
+      return null;
+  }
+}
+
 // Rest of the code remains unchanged...
 
 function App() {
@@ -43,9 +69,13 @@ function App() {
   const [domCode, setDomCode] = useState('');
 
   // Helper methods
-  function handleClick() {
+  async function handleClick() {
     setIsActive(!isActive);
-    console.log(typeof domCode)
+
+    const code = await sendPostRequest(domCode); // Send only the domCode in the POST request
+    if(code !== null){
+      setDomCode(code.message.content)
+    }
   }
 
   useEffect(() => {
