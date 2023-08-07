@@ -45,6 +45,7 @@ function App() {
   // Helper methods
   function handleClick() {
     setIsActive(!isActive);
+    console.log(typeof domCode)
   }
 
   useEffect(() => {
@@ -76,7 +77,36 @@ function App() {
         {/* Right Flex */}
         {/* Code Block Starts Here */}
         <pre style={{ fontSize: '14px', backgroundColor: '#f0f0f0' }}>
-          {domCode}
+          {`const [isActive, setIsActive] = useState(false);
+  const [options, setOptions] = useState(initalOptions);
+  const [domCode, setDomCode] = useState('');
+
+  // Helper methods
+  function handleClick() {
+    setIsActive(!isActive);
+  }
+
+  useEffect(() => {
+    getCardJSX(isActive, options).then((formattedCode) => {
+      setDomCode(formattedCode);
+    });
+  }, [isActive, options]);
+
+  function handlePasskeyClick() {
+    const updatedOptions = {
+      options: [
+        {
+          id: 1,
+          option: 'Passkey',
+        },
+      ],
+    };
+    setOptions(updatedOptions);
+  }
+
+  return (
+    ${domCode} 
+    )`}
         </pre>
         {/* Card Starts here */}
         <div className="container">
@@ -144,42 +174,5 @@ function ItemList({ options, onClick }) {
   );
 }
 
-const MyComponent = () => {
-  return (
-    <div className="card" style={{ width: '18rem' }}>
-      <div className="card-body">
-        <h5 className="card-title">Signup/Login</h5>
-        <div className="mb-3">
-          <label htmlFor="exampleFormControlInput1" className="form-label">
-            Email address
-          </label>
-          <input
-            type="email"
-            className="form-control"
-            id="exampleFormControlInput2"
-            placeholder="name@example.com"
-          />
-        </div>
-        <label htmlFor="inputPassword5" className="form-label">
-          Password
-        </label>
-        <input
-          type="password"
-          id="inputPassword6"
-          className="form-control"
-          aria-describedby="passwordHelpBlock"
-        />
-        <ul>
-          <li>
-            <button>Passkey</button>
-          </li>
-          <li>
-            <button>Google</button>
-          </li>
-        </ul>
-      </div>
-    </div>
-  );
-};
 
 export default App;
