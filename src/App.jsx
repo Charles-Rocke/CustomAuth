@@ -1,99 +1,106 @@
-import { useState, useEffect } from 'react';
-import ReactDOMServer from 'react-dom/server';
-import axios from 'axios';
-import * as prettier from "https://unpkg.com/prettier@3.0.1/standalone.mjs";
-import prettierPluginBabel from "https://unpkg.com/prettier@3.0.1/plugins/babel.mjs";
-import prettierPluginEstree from "https://unpkg.com/prettier@3.0.1/plugins/estree.mjs";
+import { useState, useEffect } from 'react'
+import ReactDOMServer from 'react-dom/server'
+import * as prettier from 'https://unpkg.com/prettier@3.0.1/standalone.mjs'
+import prettierPluginBabel from 'https://unpkg.com/prettier@3.0.1/plugins/babel.mjs'
+import prettierPluginEstree from 'https://unpkg.com/prettier@3.0.1/plugins/estree.mjs'
 
-const initalOptions = {
-  options: [
-    {
-      id: 1,
-      option: 'Passkey',
-    },
-    {
-      id: 2,
-      option: 'Google',
-    },
-  ],
-};
+const initalOptions = [
+  {
+    id: 1,
+    option: 'Passkey'
+  },
+  {
+    id: 2,
+    option: 'Google'
+  }
+]
 
-async function getCardJSX(active, options) {
+async function getCardJSX (active, options) {
+  // Generate JSX code from React components
   const jsxCode = ReactDOMServer.renderToStaticMarkup(
     <Card active={active} options={options} />
-  );
+  )
 
   try {
+    // Format the JSX code using Prettier
     const formattedCode = await prettier.format(jsxCode, {
       parser: 'babel',
-      plugins: [prettierPluginBabel, prettierPluginEstree],
-    });
-    console.log(formattedCode);
-    return formattedCode;
+      plugins: [prettierPluginBabel, prettierPluginEstree]
+    })
+    console.log(formattedCode)
+    return formattedCode
   } catch (error) {
-    console.error(error);
-    return jsxCode;
+    console.error(error)
+    return jsxCode
   }
 }
 
 // send original dom code to be converted to JSX
-async function sendPostRequest(domCode) {
+async function sendPostRequest (domCode) {
   try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/generate`, {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ domCode }),
-      });
-
-      if (response.ok) {
-          const responseData = await response.json();
-          console.log('Post request successful:', responseData);
-          return responseData;
-      } else {
-          console.error('Post request failed:', response.statusText);
-          return null;
+    // Send a POST request to the API with domCode as JSON payload
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/generate`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ domCode })
       }
+    )
+
+    if (response.ok) {
+      // Parse the JSON response if successful
+      const responseData = await response.json()
+      console.log('Post request successful:', responseData)
+      return responseData
+    } else {
+      console.error('Post request failed:', response.statusText)
+      return null
+    }
   } catch (error) {
-      console.error('Error sending post request:', error);
-      return null;
+    console.error('Error sending post request:', error)
+    return null
   }
 }
 
 // Rest of the code remains unchanged...
 
-function App() {
-  const [isActive, setIsActive] = useState(false);
-  const [options, setOptions] = useState(initalOptions);
-  const [domCode, setDomCode] = useState('');
+function App () {
+  const [isActive, setIsActive] = useState(false)
+  const [options, setOptions] = useState(initalOptions)
+  const [domCode, setDomCode] = useState('')
 
   // Helper methods
-  async function handleClick() {
-    setIsActive(!isActive);
+  async function handleClick () {
+    setIsActive(!isActive)
 
-    const code = await sendPostRequest(domCode); // Send only the domCode in the POST request
-    if(code !== null){
+    // Call sendPostRequest and set domCode based on the response
+    const code = await sendPostRequest(domCode)
+    if (code !== null) {
       setDomCode(code.message.content)
     }
   }
 
   useEffect(() => {
+    // Generate and set formatted JSX code when isActive or options change
     getCardJSX(isActive, options).then((formattedCode) => {
-      setDomCode(formattedCode);
-    });
-  }, [isActive, options]);
+      setDomCode(formattedCode)
+    })
+  }, [isActive, options])
 
-  function handlePasskeyClick() {
+  function handlePasskeyClick () {
+    // Update options for the Passkey button
     const updatedOptions = {
       options: [
         {
           id: 1,
-          option: 'Passkey',
-        },
-      ],
-    };
-    setOptions(updatedOptions);
+          option: 'Passkey'
+        }
+      ]
+    }
+    setOptions(updatedOptions)
   }
 
   return (
@@ -102,12 +109,14 @@ function App() {
         {/* Left Flex */}
         <div className="container">
           <h2>Choose your Auth</h2>
-          <ItemList options={options} onClick={handleClick} />
+          <AuthList options={options} onClick={handleClick} />
         </div>
         {/* Right Flex */}
         {/* Code Block Starts Here */}
         <pre style={{ fontSize: '14px', backgroundColor: '#f0f0f0' }}>
-          {`const [isActive, setIsActive] = useState(false);
+          {/* Show formatted JSX code if domCode is available */}
+          {domCode
+            ? `const [isActive, setIsActive] = useState(false);
   const [options, setOptions] = useState(initalOptions);
   const [domCode, setDomCode] = useState('');
 
@@ -136,7 +145,8 @@ function App() {
 
   return (
     ${domCode} 
-    )`}
+  )`
+            : ''}
         </pre>
         {/* Card Starts here */}
         <div className="container">
@@ -144,17 +154,19 @@ function App() {
         </div>
       </div>
     </>
-  );
+  )
 }
 
 // ... Rest of the components remain unchanged...
 
-
-function Button({ onClick, children }) {
-  return <button onClick={onClick}>{children}</button>;
+function Button ({ onClick, children }) {
+  return <button onClick={onClick}>{children}</button>
 }
 
-function Card({ active, options }) {
+/*
+
+*/
+function Card ({ active, options }) {
   return (
     // Default Layout
     <div className="card" style={{ width: '18rem' }}>
@@ -183,26 +195,26 @@ function Card({ active, options }) {
           aria-describedby="passwordHelpBlock"
         />
         {/* if user clicks Passkey, display passkey option in card */}
-        {active && <ItemList options={options} />}
+        {active && <AuthList options={options} />}
       </div>
     </div>
-  );
+  )
 }
 
-function Item({ option, onClick }) {
-  return <Button onClick={onClick}>{option.option}</Button>;
+function Auth ({ option, onClick }) {
+  return <Button onClick={onClick}>{option.option}</Button>
 }
 
-function ItemList({ options, onClick }) {
+function AuthList ({ options, onClick }) {
+  console.log(options)
   return (
-    // display items clicked within the list
+    // display Auths clicked within the list
     <ul>
       {options.options.map((option) => (
-        <Item option={option} onClick={onClick} key={option.id} />
+        <Auth option={option} onClick={onClick} key={option.id} />
       ))}
     </ul>
-  );
+  )
 }
 
-
-export default App;
+export default App
