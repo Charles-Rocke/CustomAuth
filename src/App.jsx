@@ -7,6 +7,7 @@ import prettierPluginEstree from 'https://unpkg.com/prettier@3.0.1/plugins/estre
 import AuthList from './AuthList'
 import Card from './Card'
 import CodeBlock from './CodeBlock'
+import UserCard from './UserCard'
 
 /**
  * Set initial auth choices for user
@@ -141,6 +142,9 @@ function App () {
         {/* Users Card Section */}
         <div className="container">
           <Card passkeyActive={passkeyActive} options={options} />
+        </div>
+        <div className="container">
+          <UserCard />
         </div>
       </div>
     </>
