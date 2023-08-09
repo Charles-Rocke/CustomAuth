@@ -10,12 +10,11 @@ function UserCard () {
   const [passkeyActive, setPasskeyActive] = useState(false) // End user can select or deselect passkey
   const [email, setEmail] = useState(null) // Gets and stores current end user email
   const [passkeySigninActive, setPasskeySigninActive] = useState(false)
+
   /**
    * Set passkey active/un-active
    * @function
    */
-  console.log('passkeyActive', passkeyActive)
-  console.log('passkeySigninActive', passkeySigninActive)
   function handlePasskeyClick () {
     // If passkeyActive is being changed from true to false
     if (passkeyActive) {
@@ -37,7 +36,7 @@ function UserCard () {
                 className="form-control"
                 id="exampleFormControlInput1"
                 placeholder="name@example.com"
-                onChange={setEmail}
+                onChange={(e) => setEmail(e.target.value)} // Capture email value here
             />
             </div>
             {!passkeyActive && <div><label htmlFor="inputPassword5" className="form-label">
@@ -54,7 +53,12 @@ function UserCard () {
                 {!passkeyActive
                   ? <button onClick={handlePasskeyClick}>Passkey</button>
                   : <PasskeyButton signinActive={passkeySigninActive} onClick={setPasskeySigninActive} id='btnRegister'
-                email={email}
+                  payload={{
+                    apiKey: import.meta.env.VITE_API_BLOC_API_KEY,
+                    domain: 'base_domain',
+                    domainName: 'domain_name',
+                    email // Pass the captured email value
+                  }}
                 />
                 }
             </ul>

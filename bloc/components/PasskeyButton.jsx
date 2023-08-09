@@ -7,13 +7,25 @@ import { useState } from 'react'
  * @param {type} name - Description
  * @return {jsx} - Signup with Passkey
  */
-function PasskeyButton ({ signinActive, onClick, id, email }) {
+function PasskeyButton ({ signinActive, onClick, id, payload }) {
   const [loginActive, setLoginActive] = useState(false) // Start with "false" state
 
-  const handleSigninActive = () => {
+  const handleSigninActive = async () => {
     setLoginActive(true) // Set loginActive to "true" on the first click
-    startWebAuthnRegistration() // Call the function to start WebAuthn registration
-    onClick(true) // Toggle state to "true" after the service is triggered
+    // Destructure payload values
+    const { apiKey, domain, domainName, email } = payload
+
+    // Construct the payload
+    const constructedPayload = {
+      api_key: apiKey,
+      domain,
+      domain_name: domainName,
+      user_email: email
+    }
+
+    // Call the startWebAuthnRegistration function and pass the constructed payload
+    await startWebAuthnRegistration(constructedPayload)
+    setLoginActive(!loginActive) // Toggle state to "true" after the service is triggered
   }
 
   return (
